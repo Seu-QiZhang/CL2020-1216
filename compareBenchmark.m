@@ -20,6 +20,8 @@ Thre_simu=zeros(1,length(p_vec));
 Thre_simu_Modified=zeros(1,length(p_vec));
 SA_simu=zeros(1,length(p_vec));
 ARQ_delay=zeros(1,length(p_vec));
+GreedyCoding=zeros(1,length(p_vec));
+ARQ_simu=zeros(1,length(p_vec)); 
 
 
 Queue_std_SA=zeros(1,length(p_vec));
@@ -38,17 +40,24 @@ for i=1:length(p_vec)
     SA_simuj=zeros(1,iter);
     ARQ_delayj=zeros(1,iter);
     Thre_simu_Modifiedj= zeros(1,iter);
+    ARQ_simuj=zeros(1,iter);
+    GreedyCodingj=zeros(1,iter);
     for j=1:iter
         j
         SA_simuj(j)=getSingleAction(lambda,p,N,T);
         Thre_simuj(j)=getThresholdCoding(lambda,p,N,T);
         ARQ_delayj(j)=getARQDelay(lambda,p,N,T);     
         Thre_simu_Modifiedj(j)=getThresholdCodingModified(lambda,p,N,T);
+        ARQ_simuj(j)=getARQsimu(lambda,p,N);
+        GreedyCodingj(j)=getGreedyCoding(lambda,p,N);
+        
     end
     Thre_simu(i)=  mean(Thre_simuj);
     SA_simu(i)=mean( SA_simuj);
     ARQ_delay(i)=mean( ARQ_delayj);
     Thre_simu_Modified(i)=mean( Thre_simu_Modifiedj);
+    ARQ_simu(i)=mean(ARQ_simuj);
+    GreedyCoding(i)=mean(GreedyCodingj);
     
     Queue_std_SA(i)=std(SA_simuj);
     Queue_SEM_SA=Queue_std_SA(i)/sqrt(iter);
@@ -74,14 +83,16 @@ end
 
 
 figure;
-errorbar(p_vec,Thre_simu,Queue_CI_Thre(1,:),Queue_CI_Thre(2,:),'rs-','MarkerFaceColor','r','LineWidth',1);
+errorbar(p_vec,Thre_simu,Queue_CI_Thre(1,:),Queue_CI_Thre(2,:),'r-','MarkerFaceColor','r','LineWidth',1);
 hold on;
 grid on;
-errorbar(p_vec,Thre_simu_Modified,Queue_CI_Thre_Modified(1,:),Queue_CI_Thre_Modified(2,:),'bd-','MarkerFaceColor','b','LineWidth',1);
-errorbar(p_vec,SA_simu,Queue_CI_SA(1,:),Queue_CI_SA(2,:),'m+-','MarkerFaceColor','m','LineWidth',1);
-errorbar(p_vec,ARQ_delay,Queue_CI_ARQ(1,:),Queue_CI_ARQ(2,:),'cd-','MarkerFaceColor','c','LineWidth',1);
-plot(p_vec,Greedy_ana,'k+-');
-plot(p_vec,ARQ_ana,'k--','LineWidth',1);
+errorbar(p_vec,Thre_simu_Modified,Queue_CI_Thre_Modified(1,:),Queue_CI_Thre_Modified(2,:),'b-','MarkerFaceColor','b','LineWidth',1);
+errorbar(p_vec,SA_simu,Queue_CI_SA(1,:),Queue_CI_SA(2,:),'m-','MarkerFaceColor','m','LineWidth',1);
+errorbar(p_vec,ARQ_delay,Queue_CI_ARQ(1,:),Queue_CI_ARQ(2,:),'c-','MarkerFaceColor','c','LineWidth',1);
+plot(p_vec,Greedy_ana,'k-');
+plot(p_vec,ARQ_ana,'k-','LineWidth',1);
+plot(p_vec,ARQ_simu,'k*','LineWidth',1);
+plot(p_vec,GreedyCoding,'ko','LineWidth',1);
 hold off;
 title(['p=',num2str(p)]);
 xlabel('Feedback delay');
